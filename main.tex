@@ -1,0 +1,253 @@
+%
+% This is the LaTeX template file for lecture notes for CS294-8,
+% Computational Biology for Computer Scientists.  When preparing 
+% LaTeX notes for this class, please use this template.
+%
+% To familiarize yourself with this template, the body contains
+% some examples of its use.  Look them over.  Then you can
+% run LaTeX on this file.  After you have LaTeXed this file then
+% you can look over the result either by printing it out with
+% dvips or using xdvi.
+%
+% This template is based on the template for Prof. Sinclair's CS 270.
+
+\documentclass[11pt, twosides]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{xcolor}
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+%   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CS 419M Introduction to Machine Learning
+                        \hfill Spring 2021-22} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribe: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+}
+
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+% (To avoid bibliography problems, for now we redefine the \cite command.)
+% Also commands that create a suitable format for the reference list.
+% \renewcommand{\cite}[1]{[#1]}
+% \def\beginrefs{\begin{list}%
+%         {[\arabic{equation}]}{\usecounter{equation}
+%          \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%          \setlength{\labelwidth}{1.6truecm}}}
+% \def\endrefs{\end{list}}
+% \def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+% \newcommand{\fig}[3]{
+% 			\vspace{#2}
+% 			\begin{center}
+% 			Figure \thelecnum.#1:~#3
+% 			\end{center}
+% 	}
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+% \newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{13}{Practical Machine Learning and Non-linearities}{Abir De}{Group 1}
+%\lecture{x}{Title}{Abir De}{Group y}
+
+\section{Practical Machine Learning}
+
+\subsection{Reason for the sudden burst in nonlinear models}
+Machine Learning has its foundations in \textbf{Statistics} and Statistics mainly dealt with linear models because of their simplicity and theoretical guarantees that are associated with them. However, it is a well-known fact that most data is nonlinear. 
+A paper by George Cybenko in 1989 demonstrated that a neural network with arbitrary width could approximate any continuous function with sigmoid activations. 
+
+In the past few years, Neural Networks have become the go-to models for any ML task. The reason for this can be attributed to the development of software libraries like \textbf{Tensorflow} and \textbf{PyTorch} that made gradient computations convenient. This allowed researchers and practitioners to focus on model development. 
+
+\subsection{Nonlinearities in Regression}
+Consider $y = f\left(x\right)$ where $x \in \mathbb{R}$ is a data instance defined by a set of features. $f$ maps $x$ to the target, $y$. $f$ is not known to us and we must infer $f$ from the training set, $S$. A concrete example is $y = \log\left(x\right) + \epsilon$ where $\epsilon \sim \mathcal{N}\left(0, \sigma^{2}\right)$.
+
+\textbf{Polynomials} are the simplest nonlinear models to work with and we can define,
+
+\begin{equation}
+    y = f_{\mathbf{\theta}}\left(x\right)= \sum_{i = 1}^{N}\theta_{i}x^{i}
+\end{equation}
+
+However, $\lim_{x \to 0}\log\left(x\right)= -\infty$ while $\lim_{x \to 0}f\left(x\right) = 0$. This can be resolved by including negative powers of $x$, 
+
+\begin{equation}
+    y = f_{\mathbf{\theta}}\left(x\right)= \sum_{i = -N}^{N}\theta_{i}x^{i}
+\end{equation}
+
+This model suffers from the problem that as $i$ increases, $\theta_{i}$ also increases.
+
+\subsection{Universal Approximators}
+Although polynomials are simple models to work with, they are \textbf{not} universal approximators.On the other hand, the Linear-ReLU-Linear (\textbf{LRL}) is a universal approximator 
+
+Put more formally, \emph{given any function $f$, $\forall \epsilon > 0$, $\exists$ an LRL layer parametrised by $\mathbf{\theta}$ such that $\|f - LRL_{\mathbf{\theta}}\| < \epsilon$ where $\|\cdot\|$ is a valid norm}.
+
+The LRL layer can be used to predict the target $\textbf{y}$ using \textbf{X}$\in \mathbb{R}^{|X|}$ as follows:
+
+$Z = WX+b ,\: W\in\mathbb{R}^{|Z|\times|X|}$ $\longrightarrow$ \:$Z' = ReLU(Z)$  $\longrightarrow\: y = W_1Z'+b',\: W_1\in\mathbb{R}^{1\times|Z|}$
+
+\textbf{Model Complexity} can be increased by:
+\begin{enumerate}
+    \item Increasing the dimension of Z (\emph{dim(Z)})
+    \item Cascading a large number of LRL blocks in series
+\end{enumerate}
+
+\begin{center}
+    $\:\textbf{X}\longrightarrow\framebox{LRL}\longrightarrow\framebox{LRL}\longrightarrow\framebox{LRL}\longrightarrow\framebox{LRL}\longrightarrow\cdots\longrightarrow\framebox{LRL}\longrightarrow\textbf{y}$
+\end{center}
+
+Although promising, in going from linear to nonlinear models, we give up on the ability to obtain closed form solutions, which are easy to visualize and compute. The absence of closed-form solutions leads us to devise algorithms, one of which is Gradient Descent.
+
+\section{Gradient Descent}
+Since nonlinear models do not permit closed-form solutions, we adopt an \textbf{iterative approach} to train our ML models. \textbf{Gradient Descent} is an iterative first-order optimisation algorithm used to find a local minimum/maximum of a given function.
+
+\subsection{Setup}
+Our proposed model is, $y \approx f_{\theta}(x)$ where $f$ is parametrised by $\mathbf{\theta} \in \mathbb{R}^{n}$. \\
+For general function $f$ we have to minimize,\\
+\begin{align*}
+    \min_{\mathbf{f}}\sum_{i \in\mathcal{D}} (y-f(x_{i}))^2
+\end{align*}\\
+Assuming our algorithm for the model is working we say,$f \to f_{\theta}$.
+Define a loss function, $L_{\mathbf{\theta}}$ which is to be minimised. For example, recall the regression loss function,\\
+\begin{align*}
+    L_{\mathbf{\theta}} = \min_{\mathbf{\theta}}\sum_{i \in\mathcal{D}} (y-f_{\theta}(x_{i}))^2
+\end{align*}
+
+
+The Gradient Descent update rule can be defined as follows, 
+\begin{equation}
+    \mathbf{\theta}_{t + 1} = \mathbf{\theta}_{t} - \gamma\frac{{\partial}L_{\mathbf{\theta}}}{{\partial}\mathbf{\theta}}
+\end{equation}
+
+for a suitable learning rate, $\gamma \in \mathbb{R}$.\\
+\textbf{What does suitable learning rate mean?}\\
+$\gamma$ can't be too high because if it is too high the value of $L(\theta_{t+1})$ will exceed $L(\theta_{t})$, this will happen because instead of small changes in $\theta_{t}$ big change will happen which may lead to pass the $\theta_{t}$ value at which the function was minimum.\\
+Thus we have to choose $\gamma$ small enough such that,
+\begin{align*}
+    L(\theta_{t+1}) - L(\theta_t) \leq 0
+\end{align*}
+ A theoretical bound is given for the value of $\gamma$, assuming a convex loss function.
+
+\subsection{Proof of Convergence for Convex Losses}
+\theorem{Consider the optimisation problem, $\min_{\mathbf{\theta}} L\left(\mathbf{\theta}\right)$ where $L$ is given to be convex with respect to $\mathbf{\theta}$. If $\gamma < \frac{2}{\lambda}$ where $\lambda = \max eigs\left(\mathbb{H}\left(\mathbf{\theta}\right)\right)$, then Gradient Descent converges to the global optima of $L$}.
+\begin{proof}
+Using the \emph{Taylor Series} expansion of $L$ in a neighborhood of $\mathbf{\theta}_{t}$,
+\[L(\theta) = L(\theta_t) + \bigg(\frac{\partial L}{\partial \theta}\bigg)^T\bigg|_{\theta_t}(\theta - \theta_t) + O(\theta^2)\]
+For convex losses,
+\[L(\theta) - L(\theta_t) \geq \bigg(\frac{\partial L}{\partial \theta}\bigg)^T\bigg|_{\theta_t}(\theta - \theta_t)\]
+For $\theta = \theta_{t+1}$:
+\[L(\theta_{t+1}) - L(\theta_t) \geq \bigg(\frac{\partial L}{\partial+ \theta}\bigg)^T\bigg|_{\theta_t}(\theta_{t+1} - \theta_t)\]
+But,
+\[L(\theta_{t+1}) - L(\theta_t) \leq \bigg(\frac{\partial L}{\partial \theta}\bigg)^T\bigg|_{\theta_t}(\theta_{t+1} - \theta_t) + \frac{\lambda_{max}}{2}||\theta_{t+1} - \theta_t||^2\]
+where $\lambda_{max}$ is the maximum eigenvalue of the Hessian.
+From gradient descent, we have:
+\[\theta_{t+1} - \theta_t = -\gamma \bigg(\frac{\partial L}{\partial \theta}\bigg)\bigg|_{\theta_t}\]
+Substituting the value of $\theta_{t+1} - \theta_t$:
+\[L(\theta_{t+1}) - L(\theta_t) \leq \bigg(\frac{\partial L}{\partial \theta}\bigg)^T\bigg|_{\theta_t}\bigg(-\gamma \bigg(\frac{\partial L}{\partial \theta}\bigg)\bigg|_{\theta_t}\bigg) + \frac{\lambda_{max}}{2}\gamma^2\bigg|\bigg|\frac{\partial L}{\partial \theta}\bigg|\bigg|^2\]
+\[L(\theta_{t+1}) - L(\theta_t) \leq \bigg(-\gamma + \frac{\lambda_{max}}{2}\gamma^2\bigg)\bigg|\bigg|\frac{\partial L}{\partial \theta}\bigg|\bigg|^2\]
+For $\gamma \leq \frac{2}{\lambda_{max}}$, we have:
+\[L(\theta_{t+1}) - L(\theta_t) \leq 0\]
+\end{proof}
+\begin{flushleft}
+\color{blue}
+Note that we don't want to use a large value of $\lambda$ (even it is possible) because a large value of $\lambda$ may increase the loss instead of decreasing it.
+\end{flushleft}
+
+\textbf{NOTE}: Although we proved the convergence of Gradient Descent for convex losses and found an upper bound on the learning rate, $\gamma$, one can also find a similar bound for non-convex losses. Given $\lambda$ such that $\mathbb{H}\left(\mathbf{\theta}\right) \leq \lambda\mathbb{I}$ and if $\gamma < \frac{2}{\lambda}$, then Gradient Descent will converge to a local optima. 
+
+However, the inequality $\mathbf{\theta}_{t+1} \geq \mathbf{\theta}_{t} - \gamma\|\frac{{\partial}L_{\mathbf{\theta}}}{{\partial}\mathbf{\theta}}\|^{2}$ requires convexity.
+
+Even though the same result holds for non-convex losses, $\gamma$ may be low due to which the parameters are update slowly. Adding an $L^{2}$ regulariser, $\frac{a}{2\gamma}\|\mathbf{\theta}\|^{2}$ changes the update rule to,
+
+\begin{equation*}
+    \mathbf{\theta}_{t + 1} = (1 - a)\mathbf{\theta}_{t} - \gamma\frac{{\partial}L_{\mathbf{\theta}}}{{\partial}\mathbf{\theta}}
+\end{equation*}
+
+This ensures that $\mathbf{\theta}_{t + 1} \neq \mathbf{\theta}_{t}$, preventing the learning algorithm from getting trapped in suboptimal local minima and allows it to explore the optimisation landscape more fully.
+
+\begin{flushleft}
+Q. \textbf{In practice, should the loss function be divided by the batch size?}\\
+
+Ans. \color{blue}
+\textbf{No}. Dividing the loss function by batch size reduces the effective learning rate which slows down model training. This can be avoided by scaling $\gamma$ appropriately but this is avoided in practice since typical learning rates are supposed to be small.
+\end{flushleft}
+
+\subsection{Formulation of the Update Rule as an Optimisation Problem}
+\proposition{The Gradient Descent Update rule is the solution to the  optimisation problem,}
+\begin{equation*}
+    \mathbf{\theta}_{t + 1} = \arg\min_{\mathbf{\theta}} \frac{1}{2}\|\mathbf{\theta} - \mathbf{\theta}_{t}\|^{2} + \lambda\left(L_{\mathbf{\theta}} + \left(\mathbf{\theta} - \mathbf{\theta}_{t}\right)^{T}\frac{{\partial}L_{\mathbf{\theta}}}{{\partial}\mathbf{\theta}}\right)
+\end{equation*}
+\begin{proof}
+The proof follows from differentiating the expression and setting it to zero.
+\begin{flushleft}
+From the definition of the optimisation problem, it is clear that $\lambda$ acts like a weighting parameter deciding the importance of remaining at $\mathbf{\theta}_{t}$ or updating it using a linear approximation of $L_{\mathbf{\theta}}$ in the neighborhood of $\mathbf{\theta}_{t}$.
+\end{flushleft}
+\end{proof}
+
+\section{Group Details and Individual Contribution}
+\begin{center}
+    \begin{tabular}{|c | c| }
+    \hline 
+    Section & Contributor \\ \hline
+    13.1.1, 13.1.2 & Krishnasya Arush Tadikonda (190100066) \\ \hline
+    13.1.3 & Ankith R (200070006) \\ \hline
+    13.2.1 & Bodke Pavan Vijay (200070014) \\ \hline
+    13.2.2 & Shashwat Gupta (200070075) \\ \hline
+    Notes, 13.2.3 & Aditya Sriram (200070004) \\ \hline
+    \end{tabular}
+\end{center}
+% Fill this part
+\end{document}
